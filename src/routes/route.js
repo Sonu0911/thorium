@@ -1,35 +1,47 @@
-const express = require('express');
-
+const express = require("express");
 const router = express.Router();
 
-// router.get('/test-me', function (req, res) {
-//     res.send('My first ever api!')
-// });
+let players = [];
 
-// module.exports = router;
-// adding this comment for no reasonlet players = [ 
-
-var play = [];
-var nameArray = [];
-
-router.post('/test-me', function(req, res) {
-    play.push(req.body) // insert data in play array
-    res.send(play) //send response to client side 
-
+router.post("/players", function(req, res) {
+    let player = req.body;
+    let playerName = player.name;
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].name == playerName) {
+            res.send("Player already exists");
+        }
+    }
+    players.push(player);
+    res.send(players);
 });
-router.post('/test-me2', function(req, res) {
-    if (nameArray.includes(req.body.name)) {
-        return res.send('name Already exit')
+
+router.post("/players/:playerName/bookings/:bookingId", function(req, res) {
+    let name = req.params.playerName;
+    let isPlayerPresent = false;
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].name == name) {
+            isPlayerPresent = true;
+        }
     }
 
-    nameArray.push(req.body.name);
+    if (!isPlayerPresent) {
+        res.send("PLayer is not present");
+    }
 
-
-    play.push(req.body) // insert data in play array
-
-    res.send(play) //send response to client side 
-
+    let booking = req.body;
+    let bookingId = req.params.bookingId;
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].name == name) {
+            for (let j = 0; j < players[i].bookings.length; i++) {
+                if (players[i].bookings[j].bookingNumber == bookingId) {
+                    res.send("Booking with this id is already done by players");
+                }
+            }
+            players[i].bookings.push(booking);
+        }
+    }
+    res.send(players);
 });
-// router.get('/test-me2',controller.create()); 
 
 module.exports = router;
