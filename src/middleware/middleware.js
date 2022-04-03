@@ -4,12 +4,13 @@ const bookModel = require("../models/bookModel")
 
 let authenticate = async function(req, res, next) {
     try {
-        let token = req.headers["x-api-token"]
+        let token = req.headers["x-api-key"]
         if (!token) {
             return res.status(404).send({ status: false, msg: "token is not present in header" })
         }
 
         let decodeToken = jwt.verify(token, "rushi-159")
+
         if (!decodeToken) {
             return res.status(401).send({ status: false, msg: "invalid token" })
 
@@ -37,11 +38,9 @@ const authoriseUpdateAndDelete = async function(req, res, next) {
                 return res.status(404).send({ status: false, msg: "the book you are accessing is already deleted" })
             }
 
-            console.log(req.decodeToken)
-            console.log(check.userId)
 
             if (check.userId.toString() !== req.decodeToken.userId.toString()) {
-                return res.status(404).send({ status: false, msg: "you are trying to change someone else profile" })
+                return res.status(403).send({ status: false, msg: "you are trying to change someone else profile" })
 
             }
 
